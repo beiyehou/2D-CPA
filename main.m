@@ -64,7 +64,7 @@ output_test = output_out_data.output';
 
 % 训练 ARIMA 模型
 if Force_ARIMA_train
-    Arima_params = train_arima(vertical_traffic_data);    
+    Arima_params = train_arima(rebuild_data(detrend(vertical_traffic_data)));    
     disp(['ARIMA 使用新模型' ]);
 else
    disp(['ARIMA 使用保存模型' ]);
@@ -82,7 +82,7 @@ if Force_ARIMA_train
     line_data = zeros(1,length(new_data));
     for i=1:1:length(new_data)
         prediction_temp_data = [vertical_traffic_data(:,i)' new_data(1,i)];
-        predicton_out = implement_arima( Arima_params(1,i) , prediction_temp_data);
+        predicton_out = implement_arima( Arima_params , prediction_temp_data);
         line_data(1,i) = predicton_out(1,end);
         disp(['arima:' num2str(i) '次'  '误差：' num2str(line_data(1,i) - new_data(1,i))]);
     end
@@ -95,7 +95,7 @@ if Force_ARIMA_train
         pre_new_data = vertical_traffic_data(size(vertical_traffic_data,1) - i +1,:);
         for j=1:1:length(pre_new_data)
             prediction_temp_data = vertical_traffic_data(1:(size(vertical_traffic_data,1) - i + 1 ),j)';
-            predicton_out = implement_arima( Arima_params(1,j) , prediction_temp_data);
+            predicton_out = implement_arima( Arima_params , prediction_temp_data);
             temp_line(1,j) = predicton_out(1,end);
             disp(['arima:' '第' num2str(i) '天' num2str(j) '次'  '误差：' num2str(temp_line(1,j) - pre_new_data(1,j))]);
         end   
@@ -217,10 +217,7 @@ set(gca,'xticklabel' , {'Mean Squared Error' ,'Square Deviation'},'fontsize' ,Fo
 % 命令窗口打印输出
 fprintf('数据生成器参数: 波动率:%f 横向数据天数:%d 纵向数据天数:%d 密集度：%d \n',fluctuate ,horizontal_num_day ,vertical_num_day ,deta );
 fprintf('小波神经网络参数: 输入节点数:%d 隐含层节点数:%d 输出节点数: %d\n',node_number.input , node_number.hidden , node_number.output);
-for i=1:1:length(Arima_params)
-    fprintf('%s : %d ARIMA 算法模型参数>> \n 差分次数d:%d AR 阶数 p:%d MA 阶数 q:%d\n',timeLabel(i,:),i,Arima_params(1,i).I,Arima_params(1,i).p,Arima_params(1,i).q);
-end
-
+fprintf('ARIMA 算法模型参数>> \n 差分次数d:%d AR 阶数 p:%d MA 阶数 q:%d\n',Arima_params.I,Arima_params.p,Arima_params.q);
 fprintf('平滑 a 值使用的权值:%f\n',Single_params_a.W);
 fprintf('MSE>>\n 横向预测: %f 纵向预测: %f 二维预测: %f \n',MSE_VAR_array(1,:));
 fprintf('方差>>\n 横向预测: %f 纵向预测: %f 二维预测: %f \n',MSE_VAR_array(2,:));

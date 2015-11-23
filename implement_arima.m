@@ -11,28 +11,25 @@ data = dimension_change(data,'row');
 temp_diff = Arima_params.I;
 savediffdata = [];
 predict_data = data;
-if temp_diff > 0
-    for i=1:1:temp_diff
-        savediffdata = [ savediffdata predict_data(1,1) ];
-        temp_diff = temp_diff - 1;
-        predict_data = diff( predict_data );
-    end
+while temp_diff
+    savediffdata = [ savediffdata predict_data(1,1) ];
+    temp_diff = temp_diff - 1;
+    predict_data = diff( predict_data );
 end
 
 % 实施 arima 预测
  predict_data = dimension_change(predict_data,'col');
  predict_iddata = iddata( predict_data );
 
-%  histroy_iddata =iddata( predict_iddata );
+ histroy_iddata =iddata( predict_iddata );
 
-%  model = armax( histroy_iddata , [Arima_params.p  Arima_params.q] );
-%  present(model);
- predict_object =  predict(Arima_params.model , predict_iddata , 1 );
+ model = armax( histroy_iddata , [Arima_params.p  Arima_params.q] );
+
+ predict_object =  predict(model , predict_iddata , 1 );
  
  model_predict_data = predict_object.OutputData'; % 加转置转为行向量
-  
+
  if size(savediffdata,2) ~= 0
-      model_predict_data = [predict_data(1,1:1:end-1) , model_predict_data(1,end)];
       for index=size(savediffdata,2):-1:1
             model_predict_data=cumsum([savediffdata(index),model_predict_data]);   
       end
