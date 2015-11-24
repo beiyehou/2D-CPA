@@ -7,8 +7,9 @@ vertical_num_day  = 0;
 horizontal_num_day = 4;
 fluctuate = 0.02;
 deta = 1;
+sample_gap = 15;%15mins
 % 绘图参数控制
-Line_width = 1.2;
+Line_width = 1.4;
 Marker_size = 4;
 Font_size = 16;
 Font_name = 'Times New Roman';
@@ -141,8 +142,8 @@ plot(pre_a,'r-o','linewidth',Line_width,'markersize',Marker_size);
 clear value_a;
 xlabel_str = {'0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'};    
 
-set(gca,'xtick', [-node_number.input:60/5:24*60/5]);
-set(gca,'xticklabel' , xlabel_str);
+set(gca,'xtick', [-node_number.input:2*60/sample_gap:24*60/sample_gap]);
+set(gca,'xticklabel' , timeLabel(node_number.input:2*60/sample_gap:end,:));
 xlabel('时刻','fontsize',Font_size,'fontname',Font_name);
 ylabel('权值','fontsize',Font_size,'fontname',Font_name);
 axis([1 length(pre_a) -0.5 1.5]);
@@ -150,18 +151,18 @@ legend('理论最优值', '预测值');
 set(gca,'fontsize',Font_size,'fontname',Font_name);
 %补绘二维预测结果
 figure_2 = figure(2);
-plot(ynn,'r-','linewidth',Line_width,'markersize',Marker_size);hold on;
-plot(line_data,'k-.','linewidth',Line_width,'markersize',Marker_size);
-plot(output_test,'b:','linewidth',Line_width,'markersize',Marker_size);
-plot(prediction_value_a,'g--','linewidth',Line_width,'markersize',Marker_size);
+plot(ynn,'r-o','linewidth',Line_width,'markersize',Marker_size);hold on;
+plot(line_data,'m-+','linewidth',Line_width,'markersize',Marker_size);
+plot(output_test,'b-*','linewidth',Line_width,'markersize',Marker_size);
+plot(prediction_value_a,'k-s','linewidth',Line_width,'markersize',Marker_size);
 
 % xlabel_str = {'0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'};    
 % set(gca,'xtick', [-node_number.input:60/5:24*60/5]);
 
 xlabel_str = {'0','2','4','6','8','10','12','14','16','18','20','22','24'};    
-set(gca,'xtick', [-node_number.input:2*60/5:24*60/5]);
+set(gca,'xtick', [-node_number.input:2*60/sample_gap:24*60/sample_gap]);
 
-set(gca,'xticklabel' , xlabel_str);
+set(gca,'xticklabel' , timeLabel(node_number.input:2*60/sample_gap:end,:));
 
 legend('横向预测输出' , '纵向预测输出' ,'实际网路流量', '二维协作预测输出','Location','NorthWest');
 
@@ -197,7 +198,8 @@ MSE_VAR_array = [sum((ynn - output_test).^2)/length(ynn), sum((line_data' - outp
     ];
 bar_hander = bar(MSE_VAR_array,'grouped');
 legend(bar_hander,'横向预测','纵向预测','二维协作预测');
-set(gca,'xticklabel' , {'均方差' ,'Square Deviation'},'fontsize' ,Font_size,'fontname',Font_name);
+applyhatch_pluscolor(bar_h);
+set(gca,'xticklabel' , {'均方误差' ,'方差'},'fontsize' ,Font_size,'fontname',Font_name);
 
 
 % 命令窗口打印输出
