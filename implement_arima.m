@@ -24,7 +24,7 @@ end
  histroy_iddata =iddata( predict_iddata );
 
  model = armax( histroy_iddata , [Arima_params.p  Arima_params.q] );
-
+ present(model);
  predict_object =  predict(model , predict_iddata , 1 );
  
  model_predict_data = predict_object.OutputData'; % 加转置转为行向量
